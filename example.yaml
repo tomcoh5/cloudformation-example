@@ -66,6 +66,8 @@ Resources:
       TargetType: "instance"
       UnhealthyThresholdCount: 5
       VpcId: !Ref VpcId
+      Targets:
+        - Id: !Ref MyEC2Instance
 
   MyLoadBalancer:
     Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
@@ -80,11 +82,8 @@ Resources:
     Type: "AWS::ElasticLoadBalancingV2::Listener"
     Properties:
       DefaultActions:
-        - Type: fixed-response
-          FixedResponseConfig:
-            StatusCode: 200
-            ContentType: text/plain
-            Content: "OK"
+        - Type: "forward"
+          TargetGroupArn: !Ref MyTargetGroup
       LoadBalancerArn: !Ref MyLoadBalancer
       Port: 80
       Protocol: HTTP
@@ -100,6 +99,7 @@ Resources:
           Values:
             - "/*"
       ListenerArn: !Ref MyListener
+      Priority: 1  # Add the required Priority property
 
 Outputs:
   WebsiteURL:
